@@ -51,6 +51,13 @@ namespace TestTaskTimeOut
                 return "我是上传返回的结果呀....";
             }, ct).ContinueWith(t => t.Result, ct);
         }
+        private Task UploadAsync2(CancellationToken ct)
+        {
+
+            return Task.Run(() => {
+                Thread.Sleep(3000);
+            }, ct).ContinueWith(null,ct);
+        }
         /// <summary>
         /// 模拟上传(不超时)
         /// </summary>
@@ -64,6 +71,21 @@ namespace TestTaskTimeOut
                 var result = TaskTimeout.WaitAsync(ct => UploadAsync(ct),
                    TimeSpan.FromMilliseconds(4000), CancellationToken.None).Result;
                 MessageBox.Show($"上传返回结果：{result}");
+            }
+            catch
+            {
+                MessageBox.Show($"上传超时啦....");
+            }
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                //设置超时2秒，上传耗时3秒
+                 TaskTimeout.WaitAsync(ct => UploadAsync2(ct),
+                   TimeSpan.FromMilliseconds(2000), CancellationToken.None).Wait();
+                MessageBox.Show($"上传返回结果：");
             }
             catch
             {
